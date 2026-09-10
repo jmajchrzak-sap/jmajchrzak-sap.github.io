@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jakub Majchrzak — ABAP &amp; SAP CRM Developer</title>
+<meta name="description" content="Jakub Majchrzak — Senior ABAP &amp; SAP CRM Developer based in Łódź, Poland. 14+ years building ABAP OO, interfaces, forms and CRM solutions on SAP ECC/NetWeaver.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:        #EEF1F5;
+    --panel:     #FFFFFF;
+    --ink:       #172230;
+    --ink-soft:  #4B5768;
+    --rule:      #C9D2DE;
+    --blue:      #2E5C8A;
+    --blue-deep: #1E4266;
+    --amber:     #C98A3E;
+    --dark:      #101820;
+    --dark-ink:  #D8DEE8;
+    --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; }
+  }
+
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  a{ color:var(--blue-deep); }
+  a:focus-visible, button:focus-visible{
+    outline:2px solid var(--amber);
+    outline-offset:3px;
+  }
+
+  /* ---------- top nav ---------- */
+  header.site-nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(238,241,245,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--rule);
+  }
+  .nav-inner{
+    max-width:920px; margin:0 auto;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 24px;
+  }
+  .nav-mark{
+    font-family:var(--mono); font-size:14px; font-weight:500;
+    color:var(--ink); text-decoration:none; letter-spacing:0.01em;
+  }
+  .nav-mark span{ color:var(--amber); }
+  .nav-links{ display:flex; gap:22px; list-style:none; margin:0; padding:0; }
+  .nav-links a{
+    font-family:var(--mono); font-size:13px; text-decoration:none;
+    color:var(--ink-soft); border-bottom:1px solid transparent;
+    padding-bottom:2px; transition:color .15s, border-color .15s;
+  }
+  .nav-links a:hover{ color:var(--blue-deep); border-color:var(--blue-deep); }
+  .nav-toggle{ display:none; }
+
+  /* ---------- code-editor frame ---------- */
+  .code-frame{
+    max-width:920px; margin:0 auto;
+    display:grid; grid-template-columns:52px 1fr;
+  }
+  .gutter{
+    border-right:1px solid var(--rule);
+    padding-top:2px;
+  }
+  .ln{ counter-increment:line; position:relative; }
+  .ln::before{
+    counter-reset: none;
+    content: counter(line);
+    counter-increment: line;
+  }
+  main{ counter-reset:line; }
+  .ln-num{
+    display:block;
+    font-family:var(--mono); font-size:12px; color:#9AA6B5;
+    text-align:right; padding-right:14px; user-select:none;
+  }
+  .row{
+    display:grid; grid-template-columns:52px 1fr;
+    align-items:start;
+  }
+  .row .ln-num{ padding-top:inherit; }
+
+  section{ padding:0 28px; }
+
+  /* ---------- hero ---------- */
+  .hero{
+    background:var(--dark);
+    color:var(--dark-ink);
+  }
+  .hero .code-frame{ background:var(--dark); }
+  .hero .gutter{ border-right:1px solid #24313E; }
+  .hero-inner{ padding:64px 28px 48px; }
+  .hero pre{
+    font-family:var(--mono); font-size:13px; color:#7FA6C9;
+    margin:0 0 28px; white-space:pre-wrap; line-height:1.7;
+  }
+  .hero pre .kw{ color:#C98A3E; }
+  .hero pre .str{ color:#8FBF8F; }
+  .hero pre .cm{ color:#5E7285; font-style:italic; }
+  .hero h1{
+    font-family:var(--sans); font-weight:700;
+    font-size:clamp(34px,6vw,54px);
+    margin:0 0 8px; letter-spacing:-0.01em; color:#F3F5F8;
+  }
+  .hero .role{
+    font-family:var(--mono); font-size:16px; color:#9FB4C9; margin:0 0 22px;
+  }
+  .hero .role em{ color:var(--amber); font-style:normal; }
+  .hero .meta-row{
+    display:flex; flex-wrap:wrap; gap:18px; margin:0 0 30px;
+    font-family:var(--mono); font-size:13px; color:#8B9AAC;
+  }
+  .hero .meta-row a{ color:#9FB4C9; text-decoration:none; border-bottom:1px solid #35485A; }
+  .hero .meta-row a:hover{ color:#F3F5F8; border-color:#9FB4C9; }
+  .hero .summary{
+    max-width:62ch; color:#C3CCD8; font-size:15.5px;
+  }
+
+  /* ---------- generic section styling ---------- */
+  .block{ padding:44px 0; border-bottom:1px solid var(--rule); }
+  .block:last-of-type{ border-bottom:none; }
+  .marker{
+    font-family:var(--mono); font-size:13px; color:var(--amber);
+    margin:0 0 22px; display:flex; align-items:center; gap:8px;
+  }
+  .marker::before{ content:"*"; color:var(--amber); }
+  h2.title{
+    font-family:var(--sans); font-weight:600; font-size:26px;
+    margin:0 0 26px; color:var(--ink);
+  }
+
+  /* ---------- experience ---------- */
+  .job{ margin:0 0 34px; }
+  .job:last-child{ margin-bottom:0; }
+  .job-head{
+    display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 14px;
+    margin-bottom:6px;
+  }
+  .job-dates{
+    font-family:var(--mono); font-size:12.5px; color:var(--blue-deep);
+    background:#E3E9F1; border:1px solid #D2DBE7; border-radius:3px;
+    padding:2px 8px; white-space:nowrap;
+  }
+  .job-dates.current{ background:#FBF0DF; border-color:#EBD3A4; color:#8A5A1B; }
+  .job-role{ font-weight:600; font-size:16.5px; color:var(--ink); }
+  .job-org{ font-family:var(--mono); font-size:13px; color:var(--ink-soft); margin:0 0 10px; }
+  .job ul{ margin:8px 0 0; padding-left:20px; }
+  .job li{ margin-bottom:5px; color:var(--ink-soft); font-size:14.5px; }
+  .job li::marker{ color:var(--amber); }
+
+  /* ---------- skills ---------- */
+  .skill-groups{
+    display:grid; grid-template-columns:1fr 1fr; gap:28px 32px;
+  }
+  .skill-group h3{
+    font-family:var(--mono); font-size:12.5px; font-weight:500;
+    color:var(--blue-deep); margin:0 0 10px;
+  }
+  .tag-row{ display:flex; flex-wrap:wrap; gap:8px; }
+  .tag{
+    font-family:var(--mono); font-size:12.5px; color:var(--ink);
+    background:var(--panel); border:1px solid var(--rule); border-radius:3px;
+    padding:4px 9px;
+  }
+
+  /* ---------- edu / certs / lang grid ---------- */
+  .tri-grid{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:30px; }
+  .tri-grid h3{
+    font-family:var(--mono); font-size:12.5px; font-weight:500;
+    color:var(--blue-deep); margin:0 0 12px;
+  }
+  .tri-grid .entry{ margin-bottom:14px; }
+  .tri-grid .entry:last-child{ margin-bottom:0; }
+  .tri-grid .entry-title{ font-weight:600; font-size:14.5px; }
+  .tri-grid .entry-sub{ font-family:var(--mono); font-size:12.5px; color:var(--ink-soft); }
+  .lang-bar{
+    height:5px; background:#DCE2EA; border-radius:3px; overflow:hidden; margin-top:6px;
+  }
+  .lang-bar > span{ display:block; height:100%; background:var(--blue); }
+
+  /* ---------- contact / footer ---------- */
+  .contact-block{ background:var(--dark); color:var(--dark-ink); }
+  .contact-block .code-frame{ background:var(--dark); }
+  .contact-block .gutter{ border-right:1px solid #24313E; }
+  .contact-inner{ padding:52px 28px 56px; }
+  .contact-inner h2{
+    font-family:var(--sans); font-weight:700; font-size:30px;
+    margin:0 0 14px; color:#F3F5F8;
+  }
+  .contact-inner p{ color:#B7C2D0; max-width:52ch; margin:0 0 26px; font-size:15px; }
+  .contact-links{ display:flex; flex-wrap:wrap; gap:14px; }
+  .contact-links a{
+    font-family:var(--mono); font-size:14px; text-decoration:none;
+    color:#0F1720; background:var(--amber);
+    padding:10px 16px; border-radius:3px; font-weight:500;
+    transition:background .15s;
+  }
+  .contact-links a.secondary{
+    background:transparent; color:#DCE3EC; border:1px solid #3A4C5E;
+  }
+  .contact-links a:hover{ background:#DE9C50; }
+  .contact-links a.secondary:hover{ background:#1B2732; }
+  footer{
+    max-width:920px; margin:0 auto; padding:22px 28px 40px;
+    font-family:var(--mono); font-size:12px; color:#6B7788;
+  }
+
+  /* ---------- responsive ---------- */
+  @media (max-width:640px){
+    .gutter{ display:none; }
+    .code-frame{ grid-template-columns:1fr; }
+    section{ padding:0 20px; }
+    .hero-inner{ padding:44px 20px 36px; }
+    .skill-groups{ grid-template-columns:1fr; }
+    .tri-grid{ grid-template-columns:1fr; gap:26px; }
+    .nav-links{ gap:14px; }
+    .nav-links a{ font-size:12px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-nav">
+  <div class="nav-inner">
+    <a class="nav-mark" href="#top">jmajchrzak<span>.abap</span></a>
+    <ul class="nav-links">
+      <li><a href="#experience">experience</a></li>
+      <li><a href="#skills">skills</a></li>
+      <li><a href="#background">background</a></li>
+      <li><a href="#contact">contact</a></li>
+    </ul>
+  </div>
+</header>
+
+<div id="top"></div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="code-frame">
+    <div class="gutter" aria-hidden="true">
+      <span class="ln-num" style="display:block;padding-top:64px;">01</span>
+      <span class="ln-num" style="display:block;margin-top:8px;">02</span>
+      <span class="ln-num" style="display:block;margin-top:8px;">03</span>
+      <span class="ln-num" style="display:block;margin-top:8px;">04</span>
+      <span class="ln-num" style="display:block;margin-top:44px;">05</span>
+      <span class="ln-num" style="display:block;margin-top:8px;">06</span>
+    </div>
+    <div class="hero-inner">
+      <pre><span class="kw">REPORT</span> z_jakub_majchrzak.
+<span class="cm">* Senior ABAP Developer</span>
+<span class="kw">DATA</span>: focus <span class="kw">TYPE</span> string <span class="kw">VALUE</span> <span class="str">'ABAP OO, interfaces, SAP CRM'</span>,
+      since <span class="kw">TYPE</span> d      <span class="kw">VALUE</span> <span class="str">'20110201'</span>.</pre>
+      <h1>Jakub Majchrzak</h1>
+      <p class="role">Senior ABAP Developer — <em>SAP ECC / NetWeaver</em></p>
+      <div class="meta-row">
+        <span>Łódź, Poland</span>
+        <a href="mailto:jakub.majchrzak@gmail.com">jakub.majchrzak@gmail.com</a>
+        <span>English C1 · Russian A2</span>
+      </div>
+      <p class="summary">Fourteen years building and maintaining ABAP solutions across SAP CRM, FI, SD and MM — from interaction-center transactions and ALE/EDI interfaces to Smart Forms, Web Dynpro and performance-tuned reports. Comfortable owning a problem end to end: gathering requirements, writing the code, reviewing it, documenting it, and supporting the people who use it.</p>
+    </div>
+  </div>
+</section>
+
+<main>
+
+<!-- EXPERIENCE -->
+<section id="experience" class="block">
+  <div class="marker">experience</div>
+  <h2 class="title">Where I've worked</h2>
+
+  <div class="job">
+    <div class="job-head">
+      <span class="job-dates current">07/2025 – 07/2027</span>
+      <span class="job-role">Senior SAP CRM / ABAP Developer</span>
+    </div>
+    <p class="job-org">Matrix Global IT Services — Sofia, Bulgaria</p>
+    <ul>
+      <li>Design and build business transactions and workflow for an interaction-center CRM setup.</li>
+      <li>Build and optimize ALE/EDI interfaces between SAP systems, and new interfaces between SAP and Oracle.</li>
+      <li>Reduced system load times by optimizing the existing ABAP codebase for performance and compatibility.</li>
+      <li>Run peer reviews of ABAP code to keep quality and consistency high across the team.</li>
+    </ul>
+  </div>
+
+  <div class="job">
+    <div class="job-head">
+      <span class="job-dates">02/2023 – 07/2025</span>
+      <span class="job-role">Senior ABAP Developer</span>
+    </div>
+    <p class="job-org">Sopra Steria Sp. z o.o. — Katowice / Colomiers (PL / FR)</p>
+    <ul>
+      <li>Built the main application publishing aircraft technical documentation from XML data, on the ODTD project.</li>
+      <li>Developed and maintained ABAP reports and conversions, plus supportive tools for other developers.</li>
+      <li>Added custom ABAP code checks and kept detailed release and fix records for traceability.</li>
+    </ul>
+  </div>
+
+  <div class="job">
+    <div class="job-head">
+      <span class="job-dates current">06/2020 – Present</span>
+      <span class="job-role">ABAP Developer</span>
+    </div>
+    <p class="job-org">FlintGroup Sp. z o.o. — Łódź, Poland</p>
+    <ul>
+      <li>Delivered ABAP development for a NiceLabel printing solution.</li>
+      <li>Assessed and adjusted existing ABAP developments through S/4HANA upgrade projects.</li>
+      <li>Built interfaces using the ADBC connector; maintained reports, interfaces and forms across SAP FI, SD and MM.</li>
+      <li>Coordinated with cross-functional teams to integrate external systems with SAP ERP.</li>
+    </ul>
+  </div>
+
+  <div class="job">
+    <div class="job-head">
+      <span class="job-dates">12/2020 – 01/2023</span>
+      <span class="job-role">ABAP Developer</span>
+    </div>
+    <p class="job-org">Recticel Sp. z o.o. — Łódź, Poland</p>
+    <ul>
+      <li>Designed and implemented BAPIs and RFCs for remote communication between SAP and external applications.</li>
+      <li>Used SAP ALE and IDoc technology to streamline data exchange in the supply chain.</li>
+      <li>Resolved issues via SAP Notes and OSS messages, and managed changes from development through to production.</li>
+    </ul>
+  </div>
+
+  <div class="job">
+    <div class="job-head">
+      <span class="job-dates">12/2018 – 06/2022</span>
+      <span class="job-role">ABAP Developer</span>
+    </div>
+    <p class="job-org">Sklepy KOMFORT Sp. z o.o. — Łódź, Poland</p>
+    <ul>
+      <li>Implemented a new market-labeling solution using Adobe Forms.</li>
+      <li>Built data encryption and security measures within ABAP applications.</li>
+      <li>Debugged SAP SD and MM applications, and ran knowledge-sharing sessions for junior engineers.</li>
+    </ul>
+  </div>
+
+  <div class="job">
+    <div class="job-head">
+      <span class="job-dates">01/2018 – 12/2018</span>
+      <span class="job-role">ABAP Developer</span>
+    </div>
+    <p class="job-org">BPX Sp. z o.o. — Warsaw, Poland</p>
+    <ul>
+      <li>Developed standard SAP extensions (BAPI, BADI) and an automated payroll application for a banking client.</li>
+      <li>Designed printouts with SAPscript, Smart Forms and Adobe Forms.</li>
+      <li>Built APIs for remote communication between SAP and external applications.</li>
+    </ul>
+  </div>
+
+  <div class="job">
+    <div class="job-head">
+      <span class="job-dates">03/2017 – 12/2017</span>
+      <span class="job-role">ABAP Developer</span>
+    </div>
+    <p class="job-org">SID Sp. z o.o. — Warsaw, Poland</p>
+    <ul>
+      <li>Worked across ABAP/ABAP OO and Java Portal development in MM, FI and SD.</li>
+      <li>Implemented SAP PI/XI interfaces and BW models in SAP HANA.</li>
+    </ul>
+  </div>
+
+  <div class="job">
+    <div class="job-head">
+      <span class="job-dates">09/2013 – 03/2017</span>
+      <span class="job-role">ABAP Developer</span>
+    </div>
+    <p class="job-org">Veolia Support Services Sp. z o.o. — Łódź, Poland</p>
+    <ul>
+      <li>Designed and implemented a Vendor/Customer management system using SAP Portal and SAP MDM.</li>
+      <li>Worked on ESS development and VIM Portal configuration, plus data migration from external systems.</li>
+    </ul>
+  </div>
+
+  <div class="job">
+    <div class="job-head">
+      <span class="job-dates">02/2011 – 09/2013</span>
+      <span class="job-role">ABAP Developer</span>
+    </div>
+    <p class="job-org">Accenture Sp. z o.o. — Łódź, Poland</p>
+    <ul>
+      <li>ABAP development in RM-CA, FI, SD and CO modules.</li>
+      <li>SAP CRM development in the HR module, with incident management in ServiceNow.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills" class="block">
+  <div class="marker">skills</div>
+  <h2 class="title">What I work with</h2>
+  <div class="skill-groups">
+    <div class="skill-group">
+      <h3>ABAP development</h3>
+      <div class="tag-row">
+        <span class="tag">ABAP OO</span>
+        <span class="tag">Web Dynpro (ABAP/Java)</span>
+        <span class="tag">Debugging</span>
+        <span class="tag">Performance optimization</span>
+        <span class="tag">Data dictionary</span>
+        <span class="tag">Application development</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <h3>Integration &amp; data</h3>
+      <div class="tag-row">
+        <span class="tag">ALE / IDoc</span>
+        <span class="tag">EDI development</span>
+        <span class="tag">API development</span>
+        <span class="tag">XML</span>
+        <span class="tag">SQL</span>
+        <span class="tag">SAP CRM</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <h3>Forms &amp; UX</h3>
+      <div class="tag-row">
+        <span class="tag">SAPscript</span>
+        <span class="tag">Smart Forms</span>
+        <span class="tag">Adobe Forms</span>
+        <span class="tag">Interface programming</span>
+        <span class="tag">User experience focus</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <h3>Process &amp; collaboration</h3>
+      <div class="tag-row">
+        <span class="tag">Requirements analysis</span>
+        <span class="tag">Code reviews</span>
+        <span class="tag">Technical documentation</span>
+        <span class="tag">Knowledge transfer</span>
+        <span class="tag">UML</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BACKGROUND: education / certs / languages -->
+<section id="background" class="block">
+  <div class="marker">background</div>
+  <h2 class="title">Education &amp; certifications</h2>
+  <div class="tri-grid">
+    <div>
+      <h3>education</h3>
+      <div class="entry">
+        <div class="entry-title">B.Eng. Computer Science</div>
+        <div class="entry-sub">Technical University of Łódź · 2007 – 2011</div>
+      </div>
+    </div>
+    <div>
+      <h3>certifications</h3>
+      <div class="entry">
+        <div class="entry-title">EP120 — SAP Portal Development</div>
+        <div class="entry-sub">SAP Poland · 2014</div>
+      </div>
+      <div class="entry">
+        <div class="entry-title">MDM100 — SAP NetWeaver MDM</div>
+        <div class="entry-sub">SAP Netherlands · 2015</div>
+      </div>
+    </div>
+    <div>
+      <h3>languages</h3>
+      <div class="entry">
+        <div class="entry-title">English — C1</div>
+        <div class="lang-bar"><span style="width:85%"></span></div>
+      </div>
+      <div class="entry">
+        <div class="entry-title">Russian — A2</div>
+        <div class="lang-bar"><span style="width:30%"></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- CONTACT -->
+<section id="contact" class="contact-block">
+  <div class="code-frame">
+    <div class="gutter" aria-hidden="true"></div>
+    <div class="contact-inner">
+      <h2>Let's talk</h2>
+      <p>Open to ABAP, SAP CRM and integration work — reports, interfaces, forms, or a system that needs someone to own it end to end.</p>
+      <div class="contact-links">
+        <a href="mailto:jakub.majchrzak@gmail.com">Email me</a>
+        <a class="secondary" href="#top">Back to top</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>Jakub Majchrzak · Łódź, Poland</footer>
+
+</body>
+</html>
