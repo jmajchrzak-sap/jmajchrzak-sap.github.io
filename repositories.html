@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repositories — Jakub Majchrzak</title>
+<meta name="description" content="Public ABAP repositories by Jakub Majchrzak, pulled live from GitHub.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/11.1.1/marked.min.js"></script>
+<style>
+  :root{
+    --bg:        #EEF1F5;
+    --panel:     #FFFFFF;
+    --ink:       #172230;
+    --ink-soft:  #4B5768;
+    --rule:      #C9D2DE;
+    --blue:      #2E5C8A;
+    --blue-deep: #1E4266;
+    --amber:     #C98A3E;
+    --dark:      #101820;
+    --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; }
+  }
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--sans); line-height:1.55; -webkit-font-smoothing:antialiased;
+  }
+  a{ color:var(--blue-deep); }
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--amber); outline-offset:3px; }
+
+  header.site-nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(238,241,245,0.92); backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--rule);
+  }
+  .nav-inner{
+    max-width:920px; margin:0 auto;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 24px;
+  }
+  .nav-mark{
+    font-family:var(--mono); font-size:14px; font-weight:500;
+    color:var(--ink); text-decoration:none; letter-spacing:0.01em;
+  }
+  .nav-mark span{ color:var(--amber); }
+  .nav-links{ display:flex; align-items:center; gap:22px; list-style:none; margin:0; padding:0; }
+  .nav-links a{
+    font-family:var(--mono); font-size:13px; text-decoration:none;
+    color:var(--ink-soft); border-bottom:1px solid transparent;
+    padding-bottom:2px; transition:color .15s, border-color .15s;
+  }
+  .nav-links a:hover{ color:var(--blue-deep); border-color:var(--blue-deep); }
+  .nav-links a.current{ color:var(--blue-deep); border-color:var(--blue-deep); }
+
+  .code-frame{ max-width:920px; margin:0 auto; display:grid; grid-template-columns:52px 1fr; }
+  .gutter{ border-right:1px solid var(--rule); }
+  main.code-frame{ align-items:start; }
+  section{ padding:0 28px; }
+
+  .page-head{ padding:56px 28px 36px; }
+  .marker{
+    font-family:var(--mono); font-size:13px; color:var(--amber);
+    margin:0 0 16px; display:flex; align-items:center; gap:8px;
+  }
+  .marker::before{ content:"*"; color:var(--amber); }
+  .page-head h1{
+    font-family:var(--sans); font-weight:700; font-size:clamp(30px,5vw,42px);
+    margin:0 0 12px; letter-spacing:-0.01em;
+  }
+  .page-head p{ color:var(--ink-soft); max-width:56ch; font-size:15.5px; margin:0; }
+
+  .repo-list{ padding:0 28px 64px; display:flex; flex-direction:column; gap:18px; }
+  #repo-status{
+    font-family:var(--mono); font-size:13px; color:var(--ink-soft); padding:8px 0;
+  }
+
+  .repo-card{
+    background:var(--panel); border:1px solid var(--rule); border-radius:8px;
+    padding:22px 24px;
+  }
+  .repo-card-head{
+    display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:10px;
+    margin-bottom:6px;
+  }
+  .repo-card-name{
+    font-family:var(--mono); font-weight:600; font-size:16px; text-decoration:none; color:var(--blue-deep);
+  }
+  .repo-card-name:hover{ text-decoration:underline; }
+  .repo-card-meta{ font-family:var(--mono); font-size:12px; color:#8B98A8; white-space:nowrap; }
+  .repo-card-desc{ color:var(--ink-soft); font-size:14.5px; margin:0 0 14px; }
+
+  .readme-wrap{ border-top:1px solid var(--rule); padding-top:14px; }
+  .readme-preview{
+    font-size:13.5px; color:var(--ink-soft); margin:0 0 10px;
+    font-family:var(--mono); line-height:1.6;
+  }
+  .readme-full{
+    font-size:14.5px; color:var(--ink); margin:0 0 12px;
+    max-height:420px; overflow-y:auto; padding-right:6px;
+  }
+  .readme-full h1, .readme-full h2, .readme-full h3{
+    font-family:var(--sans); font-weight:600; margin:18px 0 8px; line-height:1.3;
+  }
+  .readme-full h1{ font-size:19px; } .readme-full h2{ font-size:17px; } .readme-full h3{ font-size:15px; }
+  .readme-full p{ margin:0 0 10px; }
+  .readme-full pre{
+    background:var(--bg); border:1px solid var(--rule); border-radius:5px;
+    padding:10px 12px; overflow-x:auto; font-family:var(--mono); font-size:12.5px;
+  }
+  .readme-full code{ font-family:var(--mono); font-size:12.5px; background:var(--bg); padding:1px 4px; border-radius:3px; }
+  .readme-full pre code{ background:none; padding:0; }
+  .readme-full ul, .readme-full ol{ margin:0 0 10px; padding-left:22px; }
+  .readme-full img{ max-width:100%; }
+  .readme-full a{ color:var(--blue-deep); }
+  .readme-toggle{
+    font-family:var(--mono); font-size:12.5px; color:var(--blue-deep);
+    background:none; border:1px solid var(--rule); border-radius:4px;
+    padding:6px 12px; cursor:pointer; transition:background .15s, border-color .15s;
+  }
+  .readme-toggle:hover{ background:#E3E9F1; border-color:#C3CEDC; }
+
+  footer{ max-width:920px; margin:0 auto; padding:22px 28px 40px; font-family:var(--mono); font-size:12px; color:#6B7788; }
+
+  @media (max-width:640px){
+    .gutter{ display:none; }
+    .code-frame{ grid-template-columns:1fr; }
+    section, .page-head, .repo-list{ padding-left:20px; padding-right:20px; }
+    .nav-links{ gap:14px; }
+    .nav-links a{ font-size:12px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-nav">
+  <div class="nav-inner">
+    <a class="nav-mark" href="index.html">jmajchrzak-sap<span>.abap</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html#experience">experience</a></li>
+      <li><a href="index.html#skills">skills</a></li>
+      <li><a href="index.html#background">background</a></li>
+      <li><a href="index.html#contact">contact</a></li>
+      <li><a href="repositories.html" class="current">repositories</a></li>
+    </ul>
+  </div>
+</header>
+
+<div class="code-frame">
+  <div class="gutter" aria-hidden="true"></div>
+  <div class="page-head">
+    <div class="marker">repositories</div>
+    <h1>Public ABAP repositories</h1>
+    <p>Pulled live from GitHub — each card shows a preview of the project's README. Click through for the full file, or expand it right here.</p>
+  </div>
+</div>
+
+<main class="code-frame">
+  <div class="gutter" aria-hidden="true"></div>
+  <section class="repo-list" id="repo-list">
+    <p id="repo-status">Loading repositories…</p>
+  </section>
+</main>
+
+<footer>Jakub Majchrzak · Łódź, Poland</footer>
+
+<script>
+(function(){
+  var GH_USERNAME = 'jmajchrzak-sap';
+  var PREVIEW_LEN = 280;
+  var listEl = document.getElementById('repo-list');
+  var statusEl = document.getElementById('repo-status');
+
+  function timeAgo(dateStr){
+    var d = new Date(dateStr);
+    var days = Math.floor((Date.now() - d.getTime()) / 86400000);
+    if(days < 1) return 'today';
+    if(days < 30) return days + 'd ago';
+    if(days < 365) return Math.floor(days/30) + 'mo ago';
+    return Math.floor(days/365) + 'y ago';
+  }
+
+  function plainExcerpt(markdown){
+    var text = markdown
+      .replace(/```[\s\S]*?```/g, ' ')
+      .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+      .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+      .replace(/[#*_>`~-]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    if(text.length <= PREVIEW_LEN) return text;
+    return text.slice(0, PREVIEW_LEN).trim() + '…';
+  }
+
+  function buildCard(repo){
+    var card = document.createElement('article');
+    card.className = 'repo-card';
+
+    var head = document.createElement('div');
+    head.className = 'repo-card-head';
+
+    var name = document.createElement('a');
+    name.className = 'repo-card-name';
+    name.href = repo.html_url;
+    name.target = '_blank';
+    name.rel = 'noopener noreferrer';
+    name.textContent = repo.name;
+
+    var meta = document.createElement('span');
+    meta.className = 'repo-card-meta';
+    var bits = [];
+    if(repo.language){ bits.push(repo.language); }
+    bits.push('★ ' + repo.stargazers_count);
+    bits.push('updated ' + timeAgo(repo.updated_at));
+    meta.textContent = bits.join(' · ');
+
+    head.appendChild(name);
+    head.appendChild(meta);
+    card.appendChild(head);
+
+    if(repo.description){
+      var desc = document.createElement('p');
+      desc.className = 'repo-card-desc';
+      desc.textContent = repo.description;
+      card.appendChild(desc);
+    }
+
+    var readmeWrap = document.createElement('div');
+    readmeWrap.className = 'readme-wrap';
+
+    var preview = document.createElement('p');
+    preview.className = 'readme-preview';
+    preview.textContent = 'Loading README…';
+    readmeWrap.appendChild(preview);
+
+    card.appendChild(readmeWrap);
+    listEl.appendChild(card);
+
+    fetch('https://api.github.com/repos/' + GH_USERNAME + '/' + repo.name + '/readme', {
+      headers: { Accept: 'application/vnd.github.raw' }
+    })
+      .then(function(res){
+        if(!res.ok){ throw new Error('no readme'); }
+        return res.text();
+      })
+      .then(function(markdown){
+        preview.textContent = plainExcerpt(markdown) || 'README is empty.';
+
+        var full = document.createElement('div');
+        full.className = 'readme-full';
+        full.hidden = true;
+        try{
+          full.innerHTML = marked.parse(markdown, { mangle:false, headerIds:false });
+        }catch(e){
+          full.textContent = markdown;
+        }
+
+        var toggle = document.createElement('button');
+        toggle.className = 'readme-toggle';
+        toggle.type = 'button';
+        toggle.textContent = 'Show full README ▾';
+        toggle.addEventListener('click', function(){
+          var showing = !full.hidden;
+          full.hidden = showing;
+          preview.hidden = !showing;
+          toggle.textContent = showing ? 'Show full README ▾' : 'Hide README ▴';
+        });
+
+        readmeWrap.appendChild(full);
+        readmeWrap.appendChild(toggle);
+      })
+      .catch(function(){
+        preview.textContent = 'No README available for this repository.';
+      });
+  }
+
+  fetch('https://api.github.com/users/' + GH_USERNAME + '/repos?sort=updated&per_page=100')
+    .then(function(res){
+      if(!res.ok){ throw new Error('status ' + res.status); }
+      return res.json();
+    })
+    .then(function(repos){
+      var visible = repos.filter(function(r){
+        return !r.fork && r.language && r.language.toLowerCase() === 'abap';
+      });
+      statusEl.remove();
+      if(visible.length === 0){
+        var empty = document.createElement('p');
+        empty.id = 'repo-status';
+        empty.textContent = 'No public ABAP repositories yet.';
+        listEl.appendChild(empty);
+        return;
+      }
+      visible.forEach(buildCard);
+    })
+    .catch(function(){
+      statusEl.textContent = "Couldn't load repositories right now.";
+    });
+})();
+</script>
+
+</body>
+</html>

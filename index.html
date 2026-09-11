@@ -73,61 +73,6 @@
   .nav-links a:hover{ color:var(--blue-deep); border-color:var(--blue-deep); }
   .nav-toggle{ display:none; }
 
-  /* ---------- repos dropdown ---------- */
-  .nav-dropdown{ position:relative; }
-  .dropdown-trigger{
-    font-family:var(--mono); font-size:13px; color:var(--ink-soft);
-    background:none; border:none; cursor:pointer; margin:0;
-    padding-bottom:2px; border-bottom:1px solid transparent;
-    display:inline-flex; align-items:center; gap:4px;
-    line-height:normal; transition:color .15s, border-color .15s;
-  }
-  .dropdown-trigger:hover, .dropdown-trigger[aria-expanded="true"]{
-    color:var(--blue-deep); border-color:var(--blue-deep);
-  }
-  .caret{ font-size:9px; position:relative; top:1px; transition:transform .15s; }
-  .dropdown-trigger[aria-expanded="true"] .caret{ transform:rotate(180deg); }
-  .dropdown-panel{
-    position:absolute; top:calc(100% + 16px); right:-14px;
-    width:280px; max-height:340px; overflow-y:auto;
-    background:var(--panel); border:1px solid var(--rule); border-radius:7px;
-    box-shadow:0 12px 28px rgba(23,34,48,0.14);
-    padding:6px 0; z-index:60;
-    animation:dropdown-in .12s ease-out;
-  }
-  @keyframes dropdown-in{
-    from{ opacity:0; transform:translateY(-4px); }
-    to{ opacity:1; transform:translateY(0); }
-  }
-  .dropdown-panel::before{
-    content:""; position:absolute; top:-6px; right:22px;
-    width:11px; height:11px; background:var(--panel);
-    border-left:1px solid var(--rule); border-top:1px solid var(--rule);
-    transform:rotate(45deg);
-  }
-  .dropdown-status{
-    font-family:var(--mono); font-size:12px; color:var(--ink-soft);
-    margin:0; padding:8px 16px;
-  }
-  .dropdown-list{ list-style:none; margin:0; padding:0; }
-  .dropdown-list li{ display:block; border-top:1px solid var(--rule); }
-  .dropdown-list li:first-child{ border-top:none; }
-  .dropdown-list a{
-    display:block; padding:10px 16px; text-decoration:none;
-    color:var(--ink); font-size:13.5px; border-bottom:none;
-  }
-  .dropdown-list a:hover{ background:var(--bg); }
-  .dropdown-list .repo-name{
-    font-family:var(--mono); font-weight:500; font-size:13px; color:var(--blue-deep);
-    display:block;
-  }
-  .dropdown-list .repo-desc{
-    display:block; font-size:12.5px; color:var(--ink-soft); margin-top:2px;
-  }
-  .dropdown-list .repo-meta{
-    display:block; font-family:var(--mono); font-size:11px; color:#8B98A8; margin-top:4px;
-  }
-
   /* ---------- code-editor frame ---------- */
   .code-frame{
     max-width:920px; margin:0 auto;
@@ -304,15 +249,7 @@
       <li><a href="#skills">skills</a></li>
       <li><a href="#background">background</a></li>
       <li><a href="#contact">contact</a></li>
-      <li class="nav-dropdown">
-        <button class="dropdown-trigger" id="repos-trigger" aria-haspopup="true" aria-expanded="false">
-          repositories <span class="caret" aria-hidden="true">▾</span>
-        </button>
-        <div class="dropdown-panel" id="repos-panel" role="menu" aria-labelledby="repos-trigger" hidden>
-          <p class="dropdown-status" id="repos-status">Loading…</p>
-          <ul class="dropdown-list" id="repos-list"></ul>
-        </div>
-      </li>
+      <li><a href="repositories.html">repositories</a></li>
     </ul>
   </div>
 </header>
@@ -585,100 +522,6 @@
 </section>
 
 <footer>Jakub Majchrzak · Łódź, Poland</footer>
-
-<script>
-(function(){
-  var GH_USERNAME = 'jmajchrzak-sap';
-  var trigger = document.getElementById('repos-trigger');
-  var panel   = document.getElementById('repos-panel');
-  var status  = document.getElementById('repos-status');
-  var list    = document.getElementById('repos-list');
-  var loaded  = false;
-
-  function closePanel(){
-    panel.hidden = true;
-    trigger.setAttribute('aria-expanded', 'false');
-  }
-  function openPanel(){
-    panel.hidden = false;
-    trigger.setAttribute('aria-expanded', 'true');
-    if(!loaded){ loadRepos(); }
-  }
-
-  trigger.addEventListener('click', function(e){
-    e.stopPropagation();
-    if(panel.hidden){ openPanel(); } else { closePanel(); }
-  });
-  document.addEventListener('click', function(e){
-    if(!panel.hidden && !panel.contains(e.target) && e.target !== trigger){ closePanel(); }
-  });
-  document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape'){ closePanel(); trigger.focus(); }
-  });
-
-  function timeAgo(dateStr){
-    var d = new Date(dateStr);
-    var days = Math.floor((Date.now() - d.getTime()) / 86400000);
-    if(days < 1) return 'today';
-    if(days < 30) return days + 'd ago';
-    if(days < 365) return Math.floor(days/30) + 'mo ago';
-    return Math.floor(days/365) + 'y ago';
-  }
-
-  function loadRepos(){
-    loaded = true;
-    fetch('https://api.github.com/users/' + GH_USERNAME + '/repos?sort=updated&per_page=100')
-      .then(function(res){
-        if(!res.ok){ throw new Error('status ' + res.status); }
-        return res.json();
-      })
-      .then(function(repos){
-        var visible = repos.filter(function(r){
-          return !r.fork && r.language && r.language.toLowerCase() === 'abap';
-        });
-        if(visible.length === 0){
-          status.textContent = 'No public ABAP repositories yet.';
-          return;
-        }
-        status.remove();
-        visible.forEach(function(r){
-          var li = document.createElement('li');
-          var a = document.createElement('a');
-          a.href = r.html_url;
-          a.target = '_blank';
-          a.rel = 'noopener noreferrer';
-          a.setAttribute('role', 'menuitem');
-
-          var name = document.createElement('span');
-          name.className = 'repo-name';
-          name.textContent = r.name;
-
-          var meta = document.createElement('span');
-          meta.className = 'repo-meta';
-          var bits = [];
-          if(r.language){ bits.push(r.language); }
-          bits.push('★ ' + r.stargazers_count);
-          bits.push('updated ' + timeAgo(r.updated_at));
-          meta.textContent = bits.join(' · ');
-
-          a.appendChild(name);
-          if(r.description){
-            var desc = document.createElement('span');
-            desc.className = 'repo-desc';
-            desc.textContent = r.description;
-            a.appendChild(desc);
-          }
-          a.appendChild(meta);
-          li.appendChild(a);
-          list.appendChild(li);
-        });
-      })
-      .catch(function(){
-        status.textContent = 'Couldn\'t load repositories right now.';
-      });
-  }
-})();
-</script>
 
 </body>
 </html>
