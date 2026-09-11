@@ -63,7 +63,8 @@
     color:var(--ink); text-decoration:none; letter-spacing:0.01em;
   }
   .nav-mark span{ color:var(--amber); }
-  .nav-links{ display:flex; gap:22px; list-style:none; margin:0; padding:0; }
+  .nav-links{ display:flex; align-items:center; gap:22px; list-style:none; margin:0; padding:0; }
+  .nav-links li{ display:flex; align-items:center; }
   .nav-links a{
     font-family:var(--mono); font-size:13px; text-decoration:none;
     color:var(--ink-soft); border-bottom:1px solid transparent;
@@ -76,30 +77,44 @@
   .nav-dropdown{ position:relative; }
   .dropdown-trigger{
     font-family:var(--mono); font-size:13px; color:var(--ink-soft);
-    background:none; border:none; cursor:pointer; padding:0 0 2px;
-    border-bottom:1px solid transparent;
-    display:flex; align-items:center; gap:4px;
+    background:none; border:none; cursor:pointer; margin:0;
+    padding-bottom:2px; border-bottom:1px solid transparent;
+    display:inline-flex; align-items:center; gap:4px;
+    line-height:normal; transition:color .15s, border-color .15s;
   }
-  .dropdown-trigger:hover{ color:var(--blue-deep); border-color:var(--blue-deep); }
-  .caret{ font-size:10px; transition:transform .15s; }
+  .dropdown-trigger:hover, .dropdown-trigger[aria-expanded="true"]{
+    color:var(--blue-deep); border-color:var(--blue-deep);
+  }
+  .caret{ font-size:9px; position:relative; top:1px; transition:transform .15s; }
   .dropdown-trigger[aria-expanded="true"] .caret{ transform:rotate(180deg); }
   .dropdown-panel{
-    position:absolute; top:calc(100% + 14px); right:-14px;
+    position:absolute; top:calc(100% + 16px); right:-14px;
     width:280px; max-height:340px; overflow-y:auto;
-    background:var(--panel); border:1px solid var(--rule); border-radius:5px;
-    box-shadow:0 10px 24px rgba(23,34,48,0.12);
-    padding:10px 0; z-index:60;
+    background:var(--panel); border:1px solid var(--rule); border-radius:7px;
+    box-shadow:0 12px 28px rgba(23,34,48,0.14);
+    padding:6px 0; z-index:60;
+    animation:dropdown-in .12s ease-out;
+  }
+  @keyframes dropdown-in{
+    from{ opacity:0; transform:translateY(-4px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  .dropdown-panel::before{
+    content:""; position:absolute; top:-6px; right:22px;
+    width:11px; height:11px; background:var(--panel);
+    border-left:1px solid var(--rule); border-top:1px solid var(--rule);
+    transform:rotate(45deg);
   }
   .dropdown-status{
     font-family:var(--mono); font-size:12px; color:var(--ink-soft);
-    margin:0; padding:6px 16px;
+    margin:0; padding:8px 16px;
   }
   .dropdown-list{ list-style:none; margin:0; padding:0; }
-  .dropdown-list li{ border-top:1px solid var(--rule); }
+  .dropdown-list li{ display:block; border-top:1px solid var(--rule); }
   .dropdown-list li:first-child{ border-top:none; }
   .dropdown-list a{
-    display:block; padding:9px 16px; text-decoration:none;
-    color:var(--ink); font-size:13.5px;
+    display:block; padding:10px 16px; text-decoration:none;
+    color:var(--ink); font-size:13.5px; border-bottom:none;
   }
   .dropdown-list a:hover{ background:var(--bg); }
   .dropdown-list .repo-name{
@@ -612,15 +627,17 @@
 
   function loadRepos(){
     loaded = true;
-    fetch('https://api.github.com/users/' + GH_USERNAME + '/repos?sort=updated&per_page=10')
+    fetch('https://api.github.com/users/' + GH_USERNAME + '/repos?sort=updated&per_page=100')
       .then(function(res){
         if(!res.ok){ throw new Error('status ' + res.status); }
         return res.json();
       })
       .then(function(repos){
-        var visible = repos.filter(function(r){ return !r.fork; });
+        var visible = repos.filter(function(r){
+          return !r.fork && r.language && r.language.toLowerCase() === 'abap';
+        });
         if(visible.length === 0){
-          status.textContent = 'No public repositories yet.';
+          status.textContent = 'No public ABAP repositories yet.';
           return;
         }
         status.remove();
